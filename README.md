@@ -29,7 +29,7 @@
 
 ---
 
-**Live demo:** [https://neiki.eu/time](https://neiki.eu/time)
+**Live demo:** [https://neikiri.dev/time](https://neikiri.dev/time)
 
 ---
 
@@ -39,12 +39,12 @@ Add two lines to any HTML page — no build tools, no frameworks, no dependencie
 
 ```html
 <div data-neiki-time></div>
-<script src="https://cdn.neiki.eu/neiki-time/neiki-time.min.js"></script>
+<script src="https://cdn.neikiri.dev/neiki-time/neiki-time.min.js"></script>
 ```
 
 That's it. The clock syncs automatically and starts ticking.
 
-> Unminified version also available at `https://cdn.neiki.eu/neiki-time/neiki-time.js`
+> Unminified version also available at `https://cdn.neikiri.dev/neiki-time/neiki-time.js`
 
 ---
 
@@ -124,4 +124,4 @@ GitHub: https://github.com/neikiri
 
 ## 📬 Contact
 
-📧 Email: dev@neiki.eu
+📧 Email: neikiri@neikiri.dev

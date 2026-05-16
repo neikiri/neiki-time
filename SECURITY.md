@@ -17,7 +17,7 @@ If you discover a security vulnerability, please **do not open a public issue**.
 
 Instead, report it responsibly:
 
-* 📧 Email: **[dev@neiki.eu](mailto:dev@neiki.eu)**
+* 📧 Email: **[neikiri@neikiri.dev](mailto:neikiri@neikiri.dev)**
 * 💬 Or open a **private GitHub security advisory**
 
 ---
@@ -47,7 +47,7 @@ Neiki's Time is a **client-side JavaScript library** that runs entirely in the b
 The following areas are considered **in-scope**:
 
 * **XSS / code injection** — malicious input via data attributes or configuration options that could execute arbitrary code
-* **CDN integrity** — issues with the hosted files on `cdn.neiki.eu`
+* **CDN integrity** — issues with the hosted files on `cdn.neikiri.dev`
 * **Time API abuse** — scenarios where manipulated API responses could cause unexpected behavior
 * **DOM manipulation** — unintended DOM side effects from the library's rendering logic
 

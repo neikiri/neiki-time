@@ -20,5 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Built-in light/dark/auto theme with CSS injection
 - UMD module support (script tag, AMD, CommonJS)
 - JavaScript API: `init`, `destroy`, `sync`, `now`, `date`, `isSynced`, `getSyncInfo`
-- CDN distribution via `cdn.neiki.eu`
+- CDN distribution via `cdn.neikiri.dev`
 - Live demo page
