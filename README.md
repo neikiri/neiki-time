@@ -29,7 +29,7 @@
 
 ---
 
-**Live demo:** [https://neiki.eu/neiki-time](https://neiki.eu/neiki-time)
+**Live demo:** [https://neiki.eu/time](https://neiki.eu/time)
 
 ---
 
