@@ -1,312 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta name="description" content="Demo of Neiki's Time, an ultra-precise, NTP-synced and drift-free time display for the web."><meta name="robots" content="index, follow"><meta property="og:type" content="website"><meta property="og:title" content="Neiki's Time – Ultra-Precise Time Display"><meta property="og:description" content="An ultra-precise, NTP-synced and drift-free time display for the web."><meta property="og:url" content="https://neikiri.dev/time/"><meta name="twitter:card" content="summary">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neiki's Time — Live Demo</title>
-  <style>
-    /* ── Reset & Base ─────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta name="description" content="Demo of Neiki's Time, an ultra-precise, NTP-synced and drift-free time display for the web.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Neiki's Time – Ultra-Precise Time Display">
+    <meta property="og:description" content="An ultra-precise, NTP-synced and drift-free time display for the web.">
+    <meta property="og:url" content="https://neikiri.dev/time/">
+    <meta name="twitter:card" content="summary">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neiki's Time — Live Demo</title>
+    <style>
+        /* ── Reset & Base ─────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --bg: #0b0e14;
-      --surface: #131720;
-      --border: #1e2533;
-      --text: #c5cdd9;
-      --text-muted: #6b7a90;
-      --accent: #58a6ff;
-      --accent-glow: rgba(88, 166, 255, .12);
-      --code-bg: #161b25;
-      --radius: 12px;
-      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Consolas, monospace;
-      --page-pad: clamp(.75rem, 4vw, 1.5rem);
-    }
+        :root {
+            --bg: #0b0e14;
+            --surface: #131720;
+            --border: #1e2533;
+            --text: #c5cdd9;
+            --text-muted: #6b7a90;
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, .12);
+            --code-bg: #161b25;
+            --radius: 12px;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Consolas, monospace;
+            --page-pad: clamp(.75rem, 4vw, 1.5rem);
+        }
 
-    html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+        html {
+            font-size: 100%;
+            -webkit-text-size-adjust: 100%;
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
 
-    /* ── Hero ─────────────────────────────────────────── */
-    .hero {
-      text-align: center;
-      padding: clamp(2rem, 6vw, 4rem) var(--page-pad) clamp(1rem, 3vw, 2rem);
-      max-width: 720px;
-      width: 100%;
-    }
-    .hero h1 {
-      font-size: clamp(1.5rem, 5vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -.03em;
-      background: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      margin-top: .75rem;
-      color: var(--text-muted);
-      font-size: clamp(.82rem, 2.2vw, 1.05rem);
-    }
-    .badge {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: .25em .7em;
-      font-size: clamp(.6rem, 1.8vw, .75rem);
-      font-family: var(--font-mono);
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      background: var(--accent-glow);
-    }
+        /* ── Hero ─────────────────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: clamp(2rem, 6vw, 4rem) var(--page-pad) clamp(1rem, 3vw, 2rem);
+            max-width: 720px;
+            width: 100%;
+        }
 
-    /* ── Clock Card ───────────────────────────────────── */
-    .clock-section {
-      max-width: 960px;
-      width: 100%;
-      padding: clamp(.5rem, 2vw, 1rem) var(--page-pad) clamp(1rem, 3vw, 2rem);
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(1.2rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: clamp(.5rem, 2vw, 1rem);
-    }
-    .card-label {
-      font-size: clamp(.8rem, 2.2vw, 1.05rem);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      /*color: var(--text-muted);*/
-      display: inline-flex;
-      align-items: center;
-      gap: .20em;
-    }
-    .card-label svg {
-      width: 1.15em;
-      height: 1.15em;
-      flex-shrink: 0;
-    }
+        .hero h1 {
+            font-size: clamp(1.5rem, 5vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: -.03em;
+            background: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    /* Large centered clock — fluid font */
-    .card [data-neiki-time] {
-      font-size: clamp(2rem, 10vw, 5rem);
-      background: none !important;
-      border: none !important;
-      color: var(--accent) !important;
-      text-align: center;
-      padding: 0;
-      width: 100%;
-      word-break: keep-all;
-      white-space: nowrap;
-    }
+        .hero p {
+            margin-top: .75rem;
+            color: var(--text-muted);
+            font-size: clamp(.82rem, 2.2vw, 1.05rem);
+        }
 
-    /* ── Sync Status ──────────────────────────────────── */
-    .sync-bar {
-      max-width: 960px;
-      width: 100%;
-      padding: 0 var(--page-pad) clamp(1rem, 3vw, 2rem);
-    }
-    .sync-info {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(.6rem, 2vw, 1.2rem) clamp(.8rem, 2.5vw, 1.8rem);
-      font-family: var(--font-mono);
-      font-size: clamp(.62rem, 1.8vw, .82rem);
-      color: var(--text-muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: .4rem clamp(.5rem, 2vw, 2rem);
-      overflow-x: auto;
-    }
-    .sync-info span { white-space: nowrap; }
-    .dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #f85149;
-      margin-right: 6px;
-      vertical-align: middle;
-      transition: background .4s;
-    }
-    .dot.ok { background: #3fb950; box-shadow: 0 0 6px rgba(63,185,80,.5); }
+        .badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: .25em .7em;
+            font-size: clamp(.6rem, 1.8vw, .75rem);
+            font-family: var(--font-mono);
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
 
-    /* ── Documentation ────────────────────────────────── */
-    .docs {
-      max-width: 960px;
-      width: 100%;
-      padding: 0 var(--page-pad) clamp(1.5rem, 4vw, 3rem);
-      display: flex;
-      flex-direction: column;
-      gap: clamp(1rem, 2.5vw, 1.5rem);
-    }
-    .docs h2 {
-      font-size: clamp(1.05rem, 2.8vw, 1.35rem);
-      font-weight: 700;
-      color: var(--text);
-    }
-    .docs h3 {
-      font-size: clamp(.85rem, 2.2vw, 1rem);
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: .25rem;
-    }
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: clamp(.7rem, 2vw, 1.2rem) clamp(.8rem, 2.5vw, 1.5rem);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      font-family: var(--font-mono);
-      font-size: clamp(.65rem, 1.8vw, .85rem);
-      color: #a5d6ff;
-      line-height: 1.6;
-      max-width: 100%;
-    }
-    code { font-family: var(--font-mono); font-size: inherit; }
+        /* ── Clock Card ───────────────────────────────────── */
+        .clock-section {
+            max-width: 960px;
+            width: 100%;
+            padding: clamp(.5rem, 2vw, 1rem) var(--page-pad) clamp(1rem, 3vw, 2rem);
+        }
 
-    /* Table wrapper for horizontal scroll on small screens */
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .api-table {
-      width: 100%;
-      min-width: 420px;
-      border-collapse: collapse;
-      font-size: clamp(.75rem, 2vw, .88rem);
-      table-layout: fixed;
-    }
-    .api-table th:first-child,
-    .api-table td:first-child {
-      width: 45%;
-    }
-    .api-table th,
-    .api-table td {
-      text-align: left;
-      padding: clamp(.35rem, 1vw, .6rem) clamp(.5rem, 1.5vw, 1rem);
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .api-table td:last-child { white-space: normal; }
-    .api-table th {
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: clamp(.65rem, 1.6vw, .78rem);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .api-table td code {
-      color: var(--accent);
-      font-size: clamp(.68rem, 1.7vw, .82rem);
-    }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(1.2rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(.5rem, 2vw, 1rem);
+        }
 
-    /* ── Footer ───────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: clamp(1rem, 3vw, 2rem) var(--page-pad);
-      color: var(--text-muted);
-      font-size: clamp(.65rem, 1.8vw, .8rem);
-      border-top: 1px solid var(--border);
-      width: 100%;
-      max-width: 960px;
-    }
-    footer a { color: var(--accent); text-decoration: none; }
-    .heading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    .app-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      white-space: nowrap;
-      color: #58A6FF;
-      font-family: "JetBrains Mono", monospace;
-      transform: translateY(2px);
-    }
-    .github-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      color: #cdd6f4;
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background 0.15s, border-color 0.15s, transform 0.15s;
-    }
-    .github-btn:hover {
-      background: #21262d;
-      border-color: #58A6FF;
-      transform: translateY(-1px);
-    }
-  </style>
+        .card-label {
+            font-size: clamp(.8rem, 2.2vw, 1.05rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            /*color: var(--text-muted);*/
+            display: inline-flex;
+            align-items: center;
+            gap: .20em;
+        }
+
+        .card-label svg {
+            width: 1.15em;
+            height: 1.15em;
+            flex-shrink: 0;
+        }
+
+        /* Large centered clock — fluid font */
+        .card [data-neiki-time] {
+            font-size: clamp(2rem, 10vw, 5rem);
+            background: none !important;
+            border: none !important;
+            color: var(--accent) !important;
+            text-align: center;
+            padding: 0;
+            width: 100%;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        /* ── Sync Status ──────────────────────────────────── */
+        .sync-bar {
+            max-width: 960px;
+            width: 100%;
+            padding: 0 var(--page-pad) clamp(1rem, 3vw, 2rem);
+        }
+
+        .sync-info {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(.6rem, 2vw, 1.2rem) clamp(.8rem, 2.5vw, 1.8rem);
+            font-family: var(--font-mono);
+            font-size: clamp(.62rem, 1.8vw, .82rem);
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem clamp(.5rem, 2vw, 2rem);
+            overflow-x: auto;
+        }
+
+        .sync-info span {
+            white-space: nowrap;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f85149;
+            margin-right: 6px;
+            vertical-align: middle;
+            transition: background .4s;
+        }
+
+        .dot.ok {
+            background: #3fb950;
+            box-shadow: 0 0 6px rgba(63, 185, 80, .5);
+        }
+
+        /* ── Documentation ────────────────────────────────── */
+        .docs {
+            max-width: 960px;
+            width: 100%;
+            padding: 0 var(--page-pad) clamp(1.5rem, 4vw, 3rem);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(1rem, 2.5vw, 1.5rem);
+        }
+
+        .docs h2 {
+            font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .docs h3 {
+            font-size: clamp(.85rem, 2.2vw, 1rem);
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: .25rem;
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(.7rem, 2vw, 1.2rem) clamp(.8rem, 2.5vw, 1.5rem);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            font-family: var(--font-mono);
+            font-size: clamp(.65rem, 1.8vw, .85rem);
+            color: #a5d6ff;
+            line-height: 1.6;
+            max-width: 100%;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: inherit;
+        }
+
+        /* Table wrapper for horizontal scroll on small screens */
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .api-table {
+            width: 100%;
+            min-width: 420px;
+            border-collapse: collapse;
+            font-size: clamp(.75rem, 2vw, .88rem);
+            table-layout: fixed;
+        }
+
+        .api-table th:first-child,
+        .api-table td:first-child {
+            width: 45%;
+        }
+
+        .api-table th,
+        .api-table td {
+            text-align: left;
+            padding: clamp(.35rem, 1vw, .6rem) clamp(.5rem, 1.5vw, 1rem);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .api-table td:last-child {
+            white-space: normal;
+        }
+
+        .api-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: clamp(.65rem, 1.6vw, .78rem);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .api-table td code {
+            color: var(--accent);
+            font-size: clamp(.68rem, 1.7vw, .82rem);
+        }
+
+        /* ── Footer ───────────────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: clamp(1rem, 3vw, 2rem) var(--page-pad);
+            color: var(--text-muted);
+            font-size: clamp(.65rem, 1.8vw, .8rem);
+            border-top: 1px solid var(--border);
+            width: 100%;
+            max-width: 960px;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .heading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            white-space: nowrap;
+            color: #58A6FF;
+            font-family: "JetBrains Mono", monospace;
+            transform: translateY(2px);
+        }
+
+        .github-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            color: #cdd6f4;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.15s, border-color 0.15s, transform 0.15s;
+        }
+
+        .github-btn:hover {
+            background: #21262d;
+            border-color: #58A6FF;
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
+
 <body>
-  <section class="hero">
-    <div class="heading">
-      <img src="../img/icon.png" alt="Logo" class="logo-img" height="32" width="auto">
-      <span class="app-title">Neiki's Time</span>
-      <a class="github-btn" href="https://github.com/neikiri/neiki-code-editor" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
-        </svg>
-      </a>
-    </div>
-    <p>Ultra-precise, framework-free time display.<br>
-       Syncs with public time APIs via NTP-like round-trip estimation,<br>
-       then ticks on <code>performance.now()</code> for zero-drift rendering.</p>
-    <span class="badge">v1.0.0 &middot; 0 dependencies &middot; ~6 kB</span>
-  </section>
+    <section class="hero">
+        <div class="heading">
+            <img src="../img/icon.png" alt="Logo" class="logo-img" height="32" width="auto">
+            <span class="app-title">Neiki's Time</span>
+            <a class="github-btn" href="https://github.com/neikiri/neiki-code-editor" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
+                </svg>
+            </a>
+        </div>
+        <p>Ultra-precise, framework-free time display.<br>
+            Syncs with public time APIs via NTP-like round-trip estimation,<br>
+            then ticks on <code>performance.now()</code> for zero-drift rendering.</p>
+        <span class="badge">v1.0.0 &middot; 0 dependencies &middot; ~6 kB</span>
+    </section>
 
-  <section class="clock-section">
-    <div class="card">
-      <span class="card-label"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="none"><path fill="#d3d3d3" d="M23.207 24.58C21 25.5 19.05 26 16.5 26c-2.788 0-4.5-.5-7.203-1.86l-2.586 2.237C5.317 27.588 6.11 30 7.905 30H24.09c1.796 0 2.599-2.412 1.194-3.623z"/><path fill="#f8312f" d="M16.5 27C22.299 27 27 22.299 27 16.5S22.299 6 16.5 6S6 10.701 6 16.5S10.701 27 16.5 27"/><path fill="#fff" d="M16.5 24a7.5 7.5 0 1 0 0-15a7.5 7.5 0 0 0 0 15"/><path fill="#f9c23c" d="M4.273 9.228c-.735-2.284.039-4.883 2.033-6.294s4.588-1.178 6.32.396c.542.497.484 1.4-.106 1.817l-6.601 4.66c-.6.416-1.414.132-1.646-.579m24.454 0c.735-2.284-.039-4.883-2.033-6.294s-4.588-1.178-6.32.396c-.542.497-.484 1.4.106 1.817l6.601 4.66c.6.416 1.414.132 1.646-.579"/><path fill="#f8312f" d="M15.168 16.445a1 1 0 0 1 1.387-.277l3 2a1 1 0 1 1-1.11 1.664l-3-2a1 1 0 0 1-.277-1.387"/><path fill="#212121" d="M16 11a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1"/></g></svg> Local Time</span>
-      <div data-neiki-time data-neiki-nodate data-neiki-noms id="clock-local"></div>
-    </div>
-  </section>
+    <section class="clock-section">
+        <div class="card">
+            <span class="card-label"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <g fill="none">
+                        <path fill="#d3d3d3" d="M23.207 24.58C21 25.5 19.05 26 16.5 26c-2.788 0-4.5-.5-7.203-1.86l-2.586 2.237C5.317 27.588 6.11 30 7.905 30H24.09c1.796 0 2.599-2.412 1.194-3.623z" />
+                        <path fill="#f8312f" d="M16.5 27C22.299 27 27 22.299 27 16.5S22.299 6 16.5 6S6 10.701 6 16.5S10.701 27 16.5 27" />
+                        <path fill="#fff" d="M16.5 24a7.5 7.5 0 1 0 0-15a7.5 7.5 0 0 0 0 15" />
+                        <path fill="#f9c23c" d="M4.273 9.228c-.735-2.284.039-4.883 2.033-6.294s4.588-1.178 6.32.396c.542.497.484 1.4-.106 1.817l-6.601 4.66c-.6.416-1.414.132-1.646-.579m24.454 0c.735-2.284-.039-4.883-2.033-6.294s-4.588-1.178-6.32.396c-.542.497-.484 1.4.106 1.817l6.601 4.66c.6.416 1.414.132 1.646-.579" />
+                        <path fill="#f8312f" d="M15.168 16.445a1 1 0 0 1 1.387-.277l3 2a1 1 0 1 1-1.11 1.664l-3-2a1 1 0 0 1-.277-1.387" />
+                        <path fill="#212121" d="M16 11a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1" />
+                    </g>
+                </svg> Local Time</span>
+            <div data-neiki-time data-neiki-nodate data-neiki-noms id="clock-local"></div>
+        </div>
+    </section>
 
-  <section class="sync-bar">
-    <div class="sync-info" id="sync-panel">
-      <span><span class="dot" id="sync-dot"></span> <span id="sync-status">Synchronizing…</span></span>
-    </div>
-  </section>
+    <section class="sync-bar">
+        <div class="sync-info" id="sync-panel">
+            <span><span class="dot" id="sync-dot"></span> <span id="sync-status">Synchronizing…</span></span>
+        </div>
+    </section>
 
-  <section class="docs">
-    <h2>Quick Start</h2>
+    <section class="docs">
+        <h2>Quick Start</h2>
 
-    <h3>1 &mdash; Add the script and an element</h3>
-    <pre>&lt;div data-neiki-time&gt;&lt;/div&gt;
+        <h3>1 &mdash; Add the script and an element</h3>
+        <pre>&lt;div data-neiki-time&gt;&lt;/div&gt;
 &lt;script src="neiki-time.js"&gt;&lt;/script&gt;
 &lt;script&gt;NeikiTime.init();&lt;/script&gt;</pre>
 
-    <h3>2 &mdash; Or via CDN (jsDelivr / self-hosted)</h3>
-    <pre>&lt;script src="https://cdn.example.com/neiki-time@1.0.0/neiki-time.js"&gt;&lt;/script&gt;</pre>
+        <h3>2 &mdash; Or via CDN (jsDelivr / self-hosted)</h3>
+        <pre>&lt;script src="https://cdn.example.com/neiki-time@1.0.0/neiki-time.js"&gt;&lt;/script&gt;</pre>
 
-    <h3>3 &mdash; Advanced Configuration</h3>
-    <pre>NeikiTime.init({
+        <h3>3 &mdash; Advanced Configuration</h3>
+        <pre>NeikiTime.init({
   timezone: 'Europe/Prague',
   locale: 'cs-CZ',
   showDate: true,
@@ -319,34 +384,76 @@
   }
 });</pre>
 
-    <h2>Data Attributes (per-element)</h2>
-    <div class="table-wrap">
-    <table class="api-table">
-      <tr><th>Attribute</th><th>Description</th></tr>
-      <tr><td><code>data-neiki-time</code></td><td>Marks the element as a clock (required)</td></tr>
-      <tr><td><code>data-neiki-tz="Asia/Tokyo"</code></td><td>Override timezone for this element</td></tr>
-      <tr><td><code>data-neiki-nodate</code></td><td>Hide the date</td></tr>
-      <tr><td><code>data-neiki-noms</code></td><td>Hide milliseconds</td></tr>
-      <tr><td><code>data-neiki-offset</code></td><td>Show sync offset &amp; RTT</td></tr>
-    </table>
-    </div>
+        <h2>Data Attributes (per-element)</h2>
+        <div class="table-wrap">
+            <table class="api-table">
+                <tr>
+                    <th>Attribute</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>data-neiki-time</code></td>
+                    <td>Marks the element as a clock (required)</td>
+                </tr>
+                <tr>
+                    <td><code>data-neiki-tz="Asia/Tokyo"</code></td>
+                    <td>Override timezone for this element</td>
+                </tr>
+                <tr>
+                    <td><code>data-neiki-nodate</code></td>
+                    <td>Hide the date</td>
+                </tr>
+                <tr>
+                    <td><code>data-neiki-noms</code></td>
+                    <td>Hide milliseconds</td>
+                </tr>
+                <tr>
+                    <td><code>data-neiki-offset</code></td>
+                    <td>Show sync offset &amp; RTT</td>
+                </tr>
+            </table>
+        </div>
 
-    <h2>JavaScript API</h2>
-    <div class="table-wrap">
-    <table class="api-table">
-      <tr><th>Method</th><th>Description</th></tr>
-      <tr><td><code>NeikiTime.init(options?)</code></td><td>Initialize &amp; start</td></tr>
-      <tr><td><code>NeikiTime.destroy()</code></td><td>Stop everything</td></tr>
-      <tr><td><code>NeikiTime.sync()</code></td><td>Manual re-sync</td></tr>
-      <tr><td><code>NeikiTime.now()</code></td><td>Precise UTC timestamp (ms)</td></tr>
-      <tr><td><code>NeikiTime.date()</code></td><td>Precise <code>Date</code> object</td></tr>
-      <tr><td><code>NeikiTime.isSynced()</code></td><td>Is synchronized?</td></tr>
-      <tr><td><code>NeikiTime.getSyncInfo()</code></td><td>Last sync info</td></tr>
-    </table>
-    </div>
+        <h2>JavaScript API</h2>
+        <div class="table-wrap">
+            <table class="api-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.init(options?)</code></td>
+                    <td>Initialize &amp; start</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.destroy()</code></td>
+                    <td>Stop everything</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.sync()</code></td>
+                    <td>Manual re-sync</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.now()</code></td>
+                    <td>Precise UTC timestamp (ms)</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.date()</code></td>
+                    <td>Precise <code>Date</code> object</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.isSynced()</code></td>
+                    <td>Is synchronized?</td>
+                </tr>
+                <tr>
+                    <td><code>NeikiTime.getSyncInfo()</code></td>
+                    <td>Last sync info</td>
+                </tr>
+            </table>
+        </div>
 
-    <h2>How It Works</h2>
-    <pre>┌─────────────────────────────────────────────────────┐
+        <h2>How It Works</h2>
+        <pre>┌─────────────────────────────────────────────────────┐
 │ 1. Parallel queries to WorldTimeAPI + TimeAPI.io    │
 │ 2. Multiple samples — pick the one with lowest RTT  │
 │ 3. NTP-like: offset = serverTime − (t0 + rtt/2)     │
@@ -354,31 +461,32 @@
 │ 5. requestAnimationFrame() → smooth rendering       │
 │ 6. Periodic re-sync (default every 60 s)            │
 └─────────────────────────────────────────────────────┘</pre>
-  </section>
+    </section>
 
-  <footer>
-    Neiki's Time v1.0.0 &middot; MIT License &middot; Zero dependencies
-  </footer>
+    <footer>
+        Neiki's Time v1.0.0 &middot; MIT License &middot; Zero dependencies
+    </footer>
 
-  <script src="https://cdn.neikiri.dev/neiki-time/neiki-time.js"></script>
-  <script>
-    NeikiTime.init({
-      showDate: true,
-      showMs: true,
-      syncInterval: 60000,
-      theme: 'none', // we handle styling ourselves
-      onSync: function (info) {
-        var dot = document.getElementById('sync-dot');
-        var status = document.getElementById('sync-status');
-        dot.classList.add('ok');
-        status.textContent =
-          'Synchronized via ' + info.api +
-          '  |  offset: ' + (info.offset >= 0 ? '+' : '') + info.offset.toFixed(1) + ' ms' +
-          '  |  RTT: ' + info.rtt + ' ms' +
-          '  |  accuracy: ±' + Math.ceil(info.rtt / 2) + ' ms';
-      }
-    });
-  </script>
+    <script src="https://cdn.neikiri.dev/neiki-time/neiki-time.js"></script>
+    <script>
+        NeikiTime.init({
+            showDate: true,
+            showMs: true,
+            syncInterval: 60000,
+            theme: 'none', // we handle styling ourselves
+            onSync: function(info) {
+                var dot = document.getElementById('sync-dot');
+                var status = document.getElementById('sync-status');
+                dot.classList.add('ok');
+                status.textContent =
+                    'Synchronized via ' + info.api +
+                    '  |  offset: ' + (info.offset >= 0 ? '+' : '') + info.offset.toFixed(1) + ' ms' +
+                    '  |  RTT: ' + info.rtt + ' ms' +
+                    '  |  accuracy: ±' + Math.ceil(info.rtt / 2) + ' ms';
+            }
+        });
+    </script>
 
 </body>
+
 </html>
