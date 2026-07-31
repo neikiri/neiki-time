@@ -23,6 +23,18 @@
   <img src="https://img.shields.io/badge/UMD-Compatible-8b5cf6?style=flat&labelColor=383C43" />
 </p>
 
+<p align="center">
+  ⭐ Enjoying Neiki's Time? Give it a Star and Fork the repository! ❤️<br>
+  Your support helps me see that the project is useful to developers<br>
+  and motivates me to keep improving it with more frequent updates.
+</p>
+
+<p align="center">
+  <a href="https://github.com/neikiri/neiki-time/fork">
+    <img src="https://img.shields.io/badge/Fork%20the%20project-2563EB?style=for-the-badge&logo=github&logoColor=white" alt="Fork the project">
+  </a>
+</p>
+
 ---
 
 <img src="img/preview.png" width="900px">
