@@ -24,4 +24,24 @@ jobs:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/neikiri/${{ github.event.repository.name }}.git"
-          git push --mirror gitlab
+
+          # Get all branches and tags from GitHub
+          git fetch origin --prune --tags
+
+          # Push all branches
+          git push gitlab 'refs/remotes/origin/*:refs/heads/*' --force
+
+          # Push all tags
+          git push gitlab 'refs/tags/*:refs/tags/*' --force
+
+          # Remove GitLab branches that no longer exist on GitHub
+          github_branches=$(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin/)
+
+          git ls-remote --heads gitlab | while read -r sha ref; do
+            branch="${ref#refs/heads/}"
+
+            if ! echo "$github_branches" | grep -Fxq "$branch"; then
+              echo "Deleting GitLab branch: $branch"
+              git push gitlab --delete "$branch"
+            fi
+          done
