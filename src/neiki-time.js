@@ -1,5 +1,5 @@
 /**
- * Neiki's Time v1.0.0
+ * Neiki's Time v1.1.0
  * Ultra-precise time display library — no frameworks, no dependencies.
  *
  * Synchronizes with multiple public time APIs using NTP-like round-trip
@@ -14,14 +14,17 @@
  * Or with options:
  *   NeikiTime.init({
  *     selector: '[data-neiki-time]',
- *     format: 'HH:mm:ss.SSS',
+ *     format: 'DD.MM.YYYY HH:mm:ss.SSS',
  *     timezone: 'Europe/Prague',
  *     locale: 'cs-CZ',
  *     showDate: true,
  *     showMs: true,
  *     showOffset: false,
  *     syncInterval: 60000,
- *     theme: 'auto'  // 'light' | 'dark' | 'auto' | 'none'
+ *     theme: 'auto', // 'light' | 'dark' | 'auto' | 'none'
+ *     fontFamily: "'Oxanium', sans-serif",
+ *     fontSize: '2rem',
+ *     fontWeight: 600
  *   });
  *
  * CDN:  Just include the script — zero dependencies.
@@ -43,7 +46,7 @@
    *  CONSTANTS
    * ==================================================================== */
 
-  var VERSION = "1.0.0";
+  var VERSION = "1.1.0";
 
   /** Public time API endpoints — we query several and pick the best. */
   var TIME_APIS = [
@@ -77,7 +80,7 @@
 
   var DEFAULT_OPTIONS = {
     selector: "[data-neiki-time]",
-    format: "HH:mm:ss.SSS",
+    format: null, // custom template; null = display controlled by showDate/showMs
     timezone: undefined, // undefined = local
     locale: undefined, // undefined = browser default
     showDate: true,
@@ -86,7 +89,11 @@
     syncInterval: 60000, // re-sync every 60 s
     syncSamples: 3, // samples per API per sync round
     theme: "auto", // 'light' | 'dark' | 'auto' | 'none'
+    fontFamily: null, // CSS font-family value; null = built-in monospace stack
+    fontSize: null, // CSS font-size value; null = built-in size
+    fontWeight: null, // CSS font-weight value; null = browser default
     onSync: null, // callback(offsetInfo)
+    onSyncError: null, // callback(error) after a failed sync round
     onTick: null, // callback(preciseDate)
   };
 
@@ -215,25 +222,29 @@
           }
         }
 
-        if (best) {
-          _offset = best.offset;
-          // Set high-res anchor
-          _anchorPerf = perfNow();
-          _anchorTrue = Date.now() + _offset;
-          _synced = true;
-          _lastSyncInfo = {
-            offset: best.offset,
-            rtt: best.rtt,
-            api: best.api,
-            time: new Date(),
-          };
-          if (typeof _options.onSync === "function") {
-            _options.onSync(_lastSyncInfo);
-          }
+        if (!best) {
+          throw new Error("All configured time APIs failed to synchronize.");
+        }
+
+        _offset = best.offset;
+        // Set high-res anchor
+        _anchorPerf = perfNow();
+        _anchorTrue = Date.now() + _offset;
+        _synced = true;
+        _lastSyncInfo = {
+          offset: best.offset,
+          rtt: best.rtt,
+          api: best.api,
+          time: new Date(),
+        };
+        if (typeof _options.onSync === "function") {
+          _options.onSync(_lastSyncInfo);
         }
       })
-      .catch(function () {
-        /* silent — will retry next interval */
+      .catch(function (error) {
+        if (typeof _options.onSyncError === "function") {
+          _options.onSyncError(error);
+        }
       })
       .then(function () {
         _syncInProgress = false;
@@ -306,19 +317,31 @@
 
     // Milliseconds are always from the precise timestamp
     var ms = pad(date.getMilliseconds(), 3);
+    var out;
 
-    var timePart = parts.hour + ":" + parts.minute + ":" + parts.second;
-    if (opts.showMs) {
-      timePart += "." + ms;
+    if (typeof opts.format === "string" && opts.format) {
+      var formatTokens = {
+        YYYY: parts.year,
+        YY: parts.year.slice(-2),
+        DD: parts.day,
+        MM: parts.month,
+        HH: parts.hour,
+        mm: parts.minute,
+        ss: parts.second,
+        SSS: ms,
+      };
+      out = opts.format.replace(/YYYY|SSS|YY|DD|MM|HH|mm|ss/g, function (token) {
+        return formatTokens[token];
+      });
+    } else {
+      var timePart = parts.hour + ":" + parts.minute + ":" + parts.second;
+      if (opts.showMs) {
+        timePart += "." + ms;
+      }
+
+      var datePart = parts.day + "." + parts.month + "." + parts.year;
+      out = (opts.showDate ? datePart + " " : "") + timePart;
     }
-
-    var datePart = parts.day + "." + parts.month + "." + parts.year;
-
-    var out = "";
-    if (opts.showDate) {
-      out += datePart + " ";
-    }
-    out += timePart;
 
     if (opts.showOffset && _lastSyncInfo) {
       out +=
@@ -378,19 +401,53 @@
    *  THEME / CSS INJECTION
    * ==================================================================== */
 
-  function injectStyles(theme) {
-    if (theme === "none") return;
-    if (document.getElementById("neiki-time-styles")) return;
+  function injectStyles(theme, fontFamily, fontSize, fontWeight) {
+    function cssValue(value) {
+      return typeof value === "string" && value.trim()
+        ? value.trim()
+        : typeof value === "number" && isFinite(value)
+          ? String(value)
+          : null;
+    }
+
+    var customFont = cssValue(fontFamily);
+    var customSize = cssValue(fontSize);
+    var customWeight = cssValue(fontWeight);
+    var typography = "";
+
+    if (theme !== "none" || customFont) {
+      typography +=
+        "font-family:" +
+        (customFont ||
+          "'JetBrains Mono','Fira Code','SF Mono','Cascadia Code',Consolas,monospace") +
+        ";";
+    }
+    if (customSize) typography += "font-size:" + customSize + ";";
+    if (customWeight) typography += "font-weight:" + customWeight + ";";
+
+    var typographyCSS = typography ? "[data-neiki-time]{" + typography + "}" : "";
+    if (theme === "none" && !typographyCSS) return;
 
     var dark =
       "background:#0d1117;color:#58a6ff;border-color:#30363d;";
     var light =
       "background:#ffffff;color:#0550ae;border-color:#d0d7de;";
 
+    if (theme === "none") {
+      var typographyStyle = document.getElementById("neiki-time-styles");
+      if (!typographyStyle) {
+        typographyStyle = document.createElement("style");
+        typographyStyle.id = "neiki-time-styles";
+        document.head.appendChild(typographyStyle);
+      }
+      typographyStyle.textContent = typographyCSS;
+      return;
+    }
+
     var base =
+      typographyCSS +
       "[data-neiki-time]{" +
-      "font-family:'JetBrains Mono','Fira Code','SF Mono','Cascadia Code',Consolas,monospace;" +
-      "font-size:1.35rem;" +
+      (customSize ? "" : "font-size:1.35rem;") +
       "font-variant-numeric:tabular-nums;" +
       "letter-spacing:.04em;" +
       "padding:.45em .9em;" +
@@ -421,10 +478,13 @@
         "}}";
     }
 
-    var style = document.createElement("style");
-    style.id = "neiki-time-styles";
+    var style = document.getElementById("neiki-time-styles");
+    if (!style) {
+      style = document.createElement("style");
+      style.id = "neiki-time-styles";
+      document.head.appendChild(style);
+    }
     style.textContent = base + themeCSS;
-    document.head.appendChild(style);
   }
 
   /* ====================================================================
@@ -440,7 +500,12 @@
     );
 
     // Inject default styles
-    injectStyles(_options.theme);
+    injectStyles(
+      _options.theme,
+      _options.fontFamily,
+      _options.fontSize,
+      _options.fontWeight
+    );
 
     // Initial sync then start rendering
     syncTime().then(function () {

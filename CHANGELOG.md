@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-09-09
+
+### Added
+
+- Configurable clock typography through the `fontFamily`, `fontSize`, and `fontWeight` options
+- Custom display templates through the `format` option
+- `onSyncError` callback for handling unsuccessful synchronization rounds
+
+---
+
 ## [1.0.0] - 2025-05-07
 
 ### Added

@@ -12,6 +12,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neiki's Time — Live Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ── Reset & Base ─────────────────────────────────── */
         *,
@@ -127,6 +130,7 @@
 
         /* Large centered clock — fluid font */
         .card [data-neiki-time] {
+            font-family: 'Oxanium', sans-serif;
             font-size: clamp(2rem, 10vw, 5rem);
             background: none !important;
             border: none !important;
@@ -290,7 +294,7 @@
         }
 
         .app-title {
-            font-size: 1.4rem;
+            font-size: 2.2rem;
             font-weight: 700;
             white-space: nowrap;
             color: #58A6FF;
@@ -323,7 +327,7 @@
 <body>
     <section class="hero">
         <div class="heading">
-            <img src="../img/icon.svg" alt="Logo" class="logo-img" height="32" width="auto">
+            <img src="../img/icon.svg" alt="Logo" class="logo-img" height="45" width="auto">
             <span class="app-title">Neiki's Time</span>
             <a class="github-btn" href="https://github.com/neikiri/neiki-code-editor" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
@@ -334,7 +338,7 @@
         <p>Ultra-precise, framework-free time display.<br>
             Syncs with public time APIs via NTP-like round-trip estimation,<br>
             then ticks on <code>performance.now()</code> for zero-drift rendering.</p>
-        <span class="badge">v1.0.0 &middot; 0 dependencies &middot; ~6 kB</span>
+        <span class="badge">v1.1.0 &middot; 0 dependencies &middot; ~6 kB</span>
     </section>
 
     <section class="clock-section">
@@ -368,10 +372,11 @@
 &lt;script&gt;NeikiTime.init();&lt;/script&gt;</pre>
 
         <h3>2 &mdash; Or via CDN (jsDelivr / self-hosted)</h3>
-        <pre>&lt;script src="https://cdn.example.com/neiki-time@1.0.0/neiki-time.js"&gt;&lt;/script&gt;</pre>
+        <pre>&lt;script src="https://cdn.example.com/neiki-time@1.1.0/neiki-time.js"&gt;&lt;/script&gt;</pre>
 
         <h3>3 &mdash; Advanced Configuration</h3>
         <pre>NeikiTime.init({
+  format: 'DD.MM.YYYY HH:mm:ss.SSS',
   timezone: 'Europe/Prague',
   locale: 'cs-CZ',
   showDate: true,
@@ -379,8 +384,14 @@
   showOffset: false,
   syncInterval: 30000,   // re-sync every 30 s
   theme: 'dark',         // 'light' | 'dark' | 'auto' | 'none'
+  fontFamily: "'Oxanium', sans-serif",
+  fontSize: '2rem',
+  fontWeight: 600,
   onSync: function(info) {
     console.log('Synced via', info.api, '| offset', info.offset, 'ms');
+  },
+  onSyncError: function(error) {
+    console.error('Time synchronization failed:', error);
   }
 });</pre>
 
@@ -464,7 +475,7 @@
     </section>
 
     <footer>
-        Neiki's Time v1.0.0 &middot; MIT License &middot; Zero dependencies
+        Neiki's Time v1.1.0 &middot; MIT License &middot; Zero dependencies
     </footer>
 
     <script src="https://cdn.neikiri.dev/neiki-time/neiki-time.js"></script>
@@ -474,6 +485,7 @@
             showMs: true,
             syncInterval: 60000,
             theme: 'none', // we handle styling ourselves
+            fontFamily: "'Oxanium', sans-serif",
             onSync: function(info) {
                 var dot = document.getElementById('sync-dot');
                 var status = document.getElementById('sync-status');

@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="JavaScript">
   <br>
   <img src="https://img.shields.io/badge/License-MIT-2563EB?style=for-the-badge&logo=open-source-initiative&logoColor=white&labelColor=000F15&logoWidth=20" alt="License">
-  <img src="https://img.shields.io/badge/Version-1.0.0-2563EB?style=for-the-badge&logo=semantic-release&logoColor=white&labelColor=000F15&logoWidth=20" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.1.0-2563EB?style=for-the-badge&logo=semantic-release&logoColor=white&labelColor=000F15&logoWidth=20" alt="Version">
 </p>
 
 <p align="center">
@@ -65,6 +65,7 @@ That's it. The clock syncs automatically and starts ticking.
 ```js
 NeikiTime.init({
   selector: '[data-neiki-time]',  // CSS selector for clock elements
+  format: 'DD.MM.YYYY HH:mm:ss.SSS', // custom output template (optional)
   timezone: 'Europe/Prague',       // IANA timezone (undefined = local)
   locale: 'cs-CZ',                // Intl locale
   showDate: true,                  // show date part
@@ -73,10 +74,18 @@ NeikiTime.init({
   syncInterval: 60000,             // re-sync interval in ms
   syncSamples: 3,                  // samples per API per sync round
   theme: 'auto',                   // 'light' | 'dark' | 'auto' | 'none'
+  fontFamily: "'Oxanium', sans-serif", // CSS font-family for the clock
+  fontSize: '2rem',                // CSS font-size for the clock
+  fontWeight: 600,                 // CSS font-weight for the clock
   onSync: function(info) {},       // callback after successful sync
+  onSyncError: function(error) {}, // callback after failed sync round
   onTick: function(date) {}        // callback every animation frame
 });
 ```
+
+`fontFamily`, `fontSize`, and `fontWeight` accept valid CSS values. Load external or custom fonts in your page before initializing the clock. The library does not download fonts itself.
+
+`format` accepts the tokens `YYYY`, `YY`, `DD`, `MM`, `HH`, `mm`, `ss`, and `SSS`. When it is set, it overrides `showDate` and `showMs`; when omitted, the existing date and millisecond options control the output.
 
 ---
 
